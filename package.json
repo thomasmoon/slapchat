@@ -1,0 +1,13 @@
+{
+  "name": "Slapchat",
+  "version": "0.0.1",
+  "description": "Real time mobile chat w/ extras",
+  "private": "true",
+  "dependencies": {
+    "socket.io": "latest",
+    "express": "latest",
+    "underscore": "latest",
+    "mobile-detect": "~1.0.0"
+  },
+  "author": "Thomas Moon"
+}

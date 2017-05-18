@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Slapchat</title>
+    <meta name="application-name" content="Slapchat"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/ladda-bootstrap/0.9.4/ladda-themeless.min.css">
+    <style type="text/css">
+        body { background-color: #5FEAFF; }
+        /*.container { min-width: 320px; }*/
+        .logo { position: relative; width: 720px; margin: 20px auto 10px auto; }
+        .logo .slapchatLogo { display: inline-block; vertical-align: top; }
+        .logo .slapchatHand { display: inline-block; vertical-align: top; }
+        @media (max-width:768px) {
+            .logo { width: 99%; }
+            .logo .slapchatLogo { width: 79%; }
+            .logo .slapchatHand { width: 19%; }
+        }
+        form.welcome #nameText { text-align:center; }
+        .chat .panel-body { padding-top: 0px; border-top: 1px solid #ddd; }
+        .list-group-item { border-radius: 0; webkit-border-radius: 0; -moz-border-radius: 0; border-right: 0; border-left: 0; }
+        .message { white-space: nowrap; padding: 10px; border-bottom: 1px solid #ddd; }
+        .message .avatar { display: inline-block; width: 64px; }
+        .message .avatar .img { display: inline-block; width: 64px; height: 64px; background: #ddd url('images/user.gif') no-repeat center center;}
+        .message .avatar.Slapchap .img { background: #000 url('images/slapchap.gif') no-repeat center center; }
+        .message .content { display: inline-block; white-space: normal; width: 75%; margin: 0 10px; vertical-align: top; }
+            /*.message .content { width: 264px;}*/
+        .message em { color: #666; font-weight: bold; }
+        button span, h1, h2, h3, h4 { font-family:'Sparhawk W01 Regular'; font-size: 36px; }
+        .panel-heading { position: relative; border-bottom: none; }
+        .panel-heading h4 { margin: 0; }
+        .panel-heading #userCount { position: absolute; top: 10px; right: 10px; }
+        .online .panel-body { padding: 0; }
+        .online .list-group { margin-bottom: 0; }
+        #backBtn, #quitBtn { margin-bottom: 20px; width: 100%; }
+        #slapOverlay { display: none; position: absolute; top: 0; left: 0; width: 100%; text-align: center; z-index: 100; }
+    </style>
+</head>
+<body>
+<div class="container col-xs-12 col-sm-10 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+    <div class="logo text-center">
+        <img class="slapchatLogo" src="/images/Slapchat.png" />
+        <img class="slapchatHand" src="/images/slap.gif" />
+    </div>
+    <div id="container"></div>
+</div>
+
+<script type="text/template" id="alert-template">
+    <div class="alert alert-<%= type %>" role="alert">
+        <span id="message"><%= message %></span>
+    </div>
+</script>
+
+<script type='text/template' id="login-template">
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-1 text-center">
+            <form class="welcome">
+                <div class="form-group
+                <% if (error)  {%>
+                    has-error
+                <% } %>
+                ">
+                    <label><h3>What&rsquo;s your name?</h3></label><br />
+                    <% if (error)  {%>
+                    <label class="control-label"><%= error %> </label>
+                    <% } %>
+                    <input id="nameText" class="form-control input-lg" type="text" value="" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="nameBtn" class="btn btn-default btn-lg ladda-button" data-size="l" data-style="zoom-in" data-spinner-color="black">
+                        <span class="ladda-label">OK</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="room-template">
+    <div class="row">
+        <div class="col-sm-9 col-md-9 col-lg-9">
+            <div id="slapOverlay">
+                <iframe src="//giphy.com/embed/Qvwc79OfQOa4g?html5=true" width="480" height="358" frameBorder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+                <div>
+                    Slapped by <span id="slapper"></span>!
+                </div>
+            </div>
+            <div class="chat panel panel-default">
+                <div class="panel-heading"><h4>Room one</h4></div>
+                <div class="panel-body">
+                    <div class="nano">
+                        <div class="content">
+                            <div class="list-group" id="chatList"></div>
+                        </div>
+                    </div>
+                    <form>
+                        <div class="input-group">
+                            <div class="input-group-addon">></div>
+                            <input class="form-control" type="text" id="chatInput">
+                            </input>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <div class="online panel panel-default">
+                <div class="panel-heading">
+                    <h4>Online</h4>
+                    <div class="badge" id="userCount"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="nano">
+                        <div class="content">
+                            <div class="list-group" id="userList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="backBtn" class="btn btn-warning btn-lg">
+                <span>Back</span>
+            </button>
+            <button type="button" id="quitBtn" class="btn btn-danger btn-lg">
+                <span>Quit</span>
+            </button>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="msg-template">
+    <div class="message row">
+        <div class='avatar <%= sender %>'>
+            <div class='img'></div>
+        </div>
+        <div class='content'>
+        <strong><%= sender %></strong><br />
+        <%= message %>
+        </div>
+    </div>
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+<!-- Plugins for Bootstrap -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/ladda-bootstrap/0.9.4/spin.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/ladda-bootstrap/0.9.4/ladda.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.0.0/mobile-detect.min.js"></script>
+<!-- Chat client -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/views/main.js"></script>
+<script src="js/models/main.js"></script>
+<script src="js/socketclient.js"></script>
+<script src="js/mainController.js"></script>
+<script type="text/javascript" src="http://fast.fonts.net/jsapi/1dcb658d-fdb9-4658-94f8-a3e3de8cdc90.js"></script>
+<script>
+
+    /*
+    window.AudioContext = window.AudioContext||window.webkitAudioContext;
+    context = new AudioContext();
+
+    request = new XMLHttpRequest();
+    request.open('GET', '/sounds/slap1.mp3', true);
+    request.responseType = 'arraybuffer';
+    request.addEventListener('load', bufferSound, false);
+    request.send();
+
+    var mySource;
+    function bufferSound(event) {
+        var request = event.target;
+        var source = context.createBufferSource();
+        source.buffer = context.createBuffer(request.response, false);
+        mySource = source;
+        console.log("sound is buffered");
+
+        $('.slapchatHand').click(function(){
+            source.connect(context.destination);
+            mySource.noteOn(0);
+        });
+    }
+    */
+</script>
+
+</body>
+</html>
